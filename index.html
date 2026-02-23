@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MASSAAD طبلية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --dark: #1a1a1a;
+      --darker: #111;
+      --cream: #f0e6d3;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark);
+      color: var(--cream);
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      width: 12px;
+      height: 12px;
+      background-color: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+    }
+
+    .cursor-follower {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.1s ease;
+      opacity: 0.6;
+    }
+
+    /* LOADER */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background-color: var(--darker);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .loader-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards 0.3s;
+    }
+
+    .loader-line {
+      width: 0;
+      height: 1px;
+      background-color: var(--gold);
+      margin-top: 20px;
+      animation: lineGrow 1s ease forwards 0.8s;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes lineGrow {
+      from { width: 0; }
+      to { width: 200px; }
+    }
+
+    /* NAVBAR */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 60px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transition: all 0.4s ease;
+    }
+
+    nav.scrolled {
+      background-color: rgba(17, 17, 17, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 60px;
+      box-shadow: 0 2px 30px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-decoration: none;
+    }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      margin-left: 40px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background-color: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+      text-shadow: 0 0 12px #c9a84caa;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-links a.active {
+      color: var(--gold);
+      text-shadow: 0 0 10px #c9a84c88;
+    }
+
+    .nav-links a.active::after { width: 100%; }
+
+    /* HERO */
+    .hero {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1600') center/cover no-repeat;
+      transform: scale(1.1);
+      transition: transform 8s ease;
+    }
+
+    .hero-bg.zoomed { transform: scale(1); }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease 0.5s;
+    }
+
+    .hero-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-subtitle {
+      font-size: 12px;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 90px;
+      color: var(--cream);
+      letter-spacing: 4px;
+      line-height: 1;
+    }
+
+    .hero h1 span {
+      font-family: 'Amiri', serif;
+      color: var(--gold);
+      font-size: 80px;
+    }
+
+    .hero-tagline {
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: var(--cream);
+      opacity: 0.7;
+      margin-top: 20px;
+      text-transform: uppercase;
+    }
+
+    .hero-buttons {
+      margin-top: 50px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 44px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      cursor: none;
+    }
+
+    .btn-primary {
+      background-color: var(--gold);
+      color: var(--darker);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background-color: #e0be6a;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(240, 230, 211, 0.5);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.6;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-indicator span {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cream);
+    }
+
+    .scroll-indicator .line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(var(--gold), transparent);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.9s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MARQUEE */
+    .marquee-section {
+      background-color: var(--gold);
+      padding: 16px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-track {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+
+    .marquee-track span {
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--darker);
+      font-weight: 600;
+      margin: 0 40px;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ABOUT */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 80vh;
+    }
+
+    .about-image {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 8s ease;
+    }
+
+    .about-image:hover img { transform: scale(1.05); }
+
+    .about-content {
+      background-color: var(--darker);
+      padding: 100px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .about-content .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .about-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .about-content p {
+      font-size: 15px;
+      line-height: 1.9;
+      color: #aaa;
+      margin-bottom: 40px;
+    }
+
+    /* FEATURES */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background-color: var(--dark);
+    }
+
+    .feature {
+      padding: 80px 50px;
+      border-right: 1px solid #2a2a2a;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+
+    .feature:last-child { border-right: none; }
+    .feature:hover { background-color: #222; }
+
+    .feature-icon {
+      font-size: 40px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .feature h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .feature p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.8;
+    }
+
+    /* GALLERY */
+    .gallery-section {
+      padding: 100px 60px;
+      background-color: var(--darker);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: var(--cream);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 16px;
+    }
+
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery-item:first-child {
+      grid-row: span 2;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 250px;
+      transition: transform 0.6s ease;
+    }
+
+    .gallery-item:hover img { transform: scale(1.08); }
+
+    /* CTA */
+    .cta-section {
+      padding: 120px 60px;
+      text-align: center;
+      background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+                  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600') center/cover fixed no-repeat;
+    }
+
+    .cta-section .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .cta-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      color: #aaa;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: var(--darker);
+      padding: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      border-top: 1px solid #222;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .footer-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.8;
+    }
+
+    .footer-title {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .footer-links a {
+      display: block;
+      color: #666;
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--cream); }
+
+    .footer-info p {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+
+    .footer-bottom {
+      background-color: var(--darker);
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #1a1a1a;
+      font-size: 12px;
+      color: #444;
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav.scrolled { padding: 12px 20px; }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .nav-links a { margin-left: 0; font-size: 12px; }
+
+      .hero h1 { font-size: 42px; }
+      .hero h1 span { font-size: 38px; }
+
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn { width: 220px; text-align: center; }
+
+      .about { grid-template-columns: 1fr; }
+      .about-image { height: 300px; }
+      .about-content { padding: 60px 30px; }
+      .about-content h2 { font-size: 32px; }
+
+      .features { grid-template-columns: 1fr; }
+      .feature { border-right: none; border-bottom: 1px solid #2a2a2a; }
+
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:first-child { grid-row: span 1; }
+
+      .cta-section { padding: 80px 30px; }
+      .cta-section h2 { font-size: 36px; }
+      .cta-buttons { flex-direction: column; align-items: center; }
+
+      footer { grid-template-columns: 1fr; padding: 40px 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- LOADER -->
+  <div class="loader" id="loader">
+    <div class="loader-logo">MASSAAD <span style="font-family:'Amiri',serif;">طبلية</span></div>
+    <div class="loader-line"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="logo">MASSAAD <span style="font-family:'Amiri',serif; font-weight:700;">طبلية</span></div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="order.html">Order</a>
+      <a href="reservations.html">Reservations</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content" id="heroContent">
+      <p class="hero-subtitle">Est. Lebanon • Authentic Experience</p>
+      <h1>MASSAAD <span>طبلية</span></h1>
+      <p class="hero-tagline">The Original Lebanese Tabliyeh Experience</p>
+      <div class="hero-buttons">
+        <a href="order.html" class="btn btn-primary">Order Now</a>
+        <a href="menu.html" class="btn btn-outline">View Menu</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span>Lebanese Cuisine</span>
+      <span>•</span>
+      <span>Authentic Tabliyeh</span>
+      <span>•</span>
+      <span>Fresh Ingredients</span>
+      <span>•</span>
+      <span>طبلية MASSAAD</span>
+      <span>•</span>
+      <span>Lebanese Cuisine</span>
+      <span>•</span>
+      <span>Authentic Tabliyeh</span>
+      <span>•</span>
+      <span>Fresh Ingredients</span>
+      <span>•</span>
+      <span>طبلية MASSAAD</span>
+      <span>•</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about reveal">
+    <div class="about-image">
+      <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800" alt="Food"/>
+    </div>
+    <div class="about-content">
+      <span class="label">Our Story</span>
+      <h2>More Than Just a Restaurant</h2>
+      <p>MASSAAD طبلية is an experience rooted in the heart of Lebanese culture. Every dish is crafted with passion, tradition, and the finest local ingredients. From our legendary tabliyeh to our authentic mezze, every bite tells a story.</p>
+      <a href="menu.html" class="btn btn-outline" style="width:fit-content;">Explore Menu</a>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="feature reveal">
+      <span class="feature-icon">🪵</span>
+      <h3>The Tabliyeh</h3>
+      <p>Our signature wooden board experience, loaded with the finest Lebanese grills and mezze.</p>
+    </div>
+    <div class="feature reveal">
+      <span class="feature-icon">🔥</span>
+      <h3>Fresh Grills</h3>
+      <p>Every piece of meat is marinated with authentic Lebanese spices and grilled to perfection.</p>
+    </div>
+    <div class="feature reveal">
+      <span class="feature-icon">🌿</span>
+      <h3>Local Ingredients</h3>
+      <p>We source only the freshest local produce to bring you the true taste of Lebanon.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery-section reveal">
+    <div class="section-header">
+      <span class="label">Visual Story</span>
+      <h2>A Feast for the Eyes</h2>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800" alt="Grill"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800" alt="Food"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800" alt="Food"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800" alt="Food"/>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=800" alt="Food"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section reveal">
+    <span class="label">Ready to Dine?</span>
+    <h2>Reserve Your Table</h2>
+    <p>Join us for an unforgettable Lebanese experience</p>
+    <div class="cta-buttons">
+      <a href="reservations.html" class="btn btn-primary">Book a Table</a>
+      <a href="order.html" class="btn btn-outline">Order Online</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <div class="footer-logo">MASSAAD <span style="font-family:'Amiri',serif;">طبلية</span></div>
+      <p class="footer-desc">The original Lebanese Tabliyeh experience. Crafted with passion, served with pride.</p>
+    </div>
+    <div>
+      <div class="footer-title">Navigation</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="order.html">Order Online</a>
+        <a href="reservations.html">Reservations</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Visit Us</div>
+      <div class="footer-info">
+        <p>📍 Lebanon</p>
+        <p>📞 +961 xx xxx xxx</p>
+        <p>🕐 Mon–Sun: 12PM – 12AM</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="footer-bottom">
+    <p>© 2025 MASSAAD طبلية. All rights reserved.</p>
+  </div>
+
+  <script>
+    // LOADER
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 800);
+      }, 1800);
+    });
+
+    // HERO ANIMATIONS
+    setTimeout(() => {
+      document.getElementById('heroBg').classList.add('zoomed');
+      document.getElementById('heroContent').classList.add('visible');
+    }, 2000);
+
+    // NAVBAR SCROLL
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // SCROLL REVEAL
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // CUSTOM CURSOR
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX - 6 + 'px';
+      cursor.style.top = e.clientY - 6 + 'px';
+      setTimeout(() => {
+        follower.style.left = e.clientX - 18 + 'px';
+        follower.style.top = e.clientY - 18 + 'px';
+      }, 80);
+    });
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'scale(2)';
+        follower.style.transform = 'scale(1.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'scale(1)';
+        follower.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+
+</body>
+</html>

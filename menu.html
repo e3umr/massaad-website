@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#c9a84c" />
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu — طبلية MASSAAD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #1a1a1a;
+      color: #f0e6d3;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background-color: #111;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: #c9a84c;
+      letter-spacing: 2px;
+    }
+
+    .nav-links a {
+      color: #f0e6d3;
+      text-decoration: none;
+      margin-left: 30px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: #c9a84c; }
+
+    .page-header {
+      text-align: center;
+      padding: 80px 20px 40px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 52px;
+      color: #c9a84c;
+    }
+
+    .page-header p {
+      color: #aaa;
+      margin-top: 10px;
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background-color: #c9a84c;
+      margin: 20px auto;
+    }
+
+    /* TABS */
+    .tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: #111;
+  position: sticky;
+  top: 110px;
+  z-index: 99;
+  border-bottom: 1px solid #222;
+}
+
+    .tab-btn {
+  padding: 10px 22px;
+  border: 1px solid #c9a84c;
+  background: transparent;
+  color: #c9a84c;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #111;
+  transition: width 0.3s ease;
+}
+
+.tab-btn:hover {
+  background-color: #c9a84c;
+  color: #111;
+  transform: scale(1.08);
+  box-shadow: 0 0 12px #c9a84caa;
+}
+
+.tab-btn.active {
+  background-color: #c9a84c;
+  color: #111;
+  transform: scale(1.08);
+  box-shadow: 0 0 16px #c9a84ccc;
+  font-weight: 600;
+}
+    .menu-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 20px 100px;
+}
+
+.menu-section {
+  margin-bottom: 70px;
+  scroll-margin-top: 160px;
+}
+
+.menu-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  color: #c9a84c;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 12px;
+  grid-column: 1 / -1;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 40px;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #2a2a2a;
+  transition: all 0.3s;
+}
+
+.menu-item:hover {
+  padding-left: 8px;
+  border-bottom-color: #c9a84c;
+}
+
+.item-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0e6d3;
+  transition: color 0.3s;
+}
+
+.menu-item:hover .item-info h3 {
+  color: #c9a84c;
+}
+
+.item-price {
+  font-size: 13px;
+  color: #c9a84c;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 10px;
+  text-align: right;
+}
+
+.item-price span {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  font-weight: 400;
+}
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      background-color: #111;
+      color: #666;
+      font-size: 13px;
+    }
+   @media (max-width: 768px) {
+  nav {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    margin-left: 0;
+  }
+
+ .nav-links a {
+  color: #f0e6d3;
+  text-decoration: none;
+  margin-left: 40px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #c9a84c;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #c9a84c;
+  transform: scale(1.15);
+  text-shadow: 0 0 12px #c9a84caa;
+  display: inline-block;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a.active {
+  color: #c9a84c;
+  font-size: 15px;
+  text-shadow: 0 0 10px #c9a84c88;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+ .tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 90px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all 0.3s ease;
+  gap: 8px;
+}
+
+.tab-btn .tab-icon {
+  font-size: 28px;
+  transition: transform 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(201, 168, 76, 0.08);
+  box-shadow: 0 0 16px #c9a84c33;
+  transform: translateY(-3px);
+}
+
+.tab-btn:hover .tab-icon { transform: scale(1.2); }
+
+.tab-btn.active {
+  background: rgba(201, 168, 76, 0.12);
+  box-shadow: 0 0 20px #c9a84c44;
+  transform: translateY(-3px);
+  font-weight: 600;
+}
+
+  .menu-section {
+    scroll-margin-top: 220px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 36px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">MASSAAD <span style="font-family: 'Amiri', serif; font-weight: 700;">طبلية</span></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+<a href="menu.html" class="active">Menu</a>
+<a href="order.html">Order</a>
+<a href="reservations.html">Reservations</a>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>Our Menu</h1>
+    <div class="divider"></div>
+    <p>FRESH • AUTHENTIC • LEBANESE</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+  <button class="tab-btn active" onclick="showCategory('starters', event)">
+    <span class="tab-icon">🥗</span>Starters
+  </button>
+  <button class="tab-btn" onclick="showCategory('combos', event)">
+    <span class="tab-icon">🍔</span>Combo's
+  </button>
+  <button class="tab-btn" onclick="showCategory('tabliyeh', event)">
+    <span class="tab-icon">🪵</span>Tabliyeh
+  </button>
+  <button class="tab-btn" onclick="showCategory('sandwiches', event)">
+    <span class="tab-icon">🥙</span>Sandwiches
+  </button>
+  <button class="tab-btn" onclick="showCategory('grills', event)">
+    <span class="tab-icon">🔥</span>Grills
+  </button>
+  <button class="tab-btn" onclick="showCategory('beverages', event)">
+    <span class="tab-icon">🥤</span>Beverages
+  </button>
+</div>
+
+  <div class="menu-container">
+
+    <!-- STARTERS -->
+    <div class="menu-section" id="starters">
+      <h2>🥗 Starters</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Tabbouleh</h3></div>
+        <div class="item-price"><span>Half</span> 300,000 LL <span>Whole</span> 540,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Fattouch</h3></div>
+        <div class="item-price"><span>Half</span> 300,000 LL <span>Whole</span> 540,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Rakakat Jebneh</h3></div>
+        <div class="item-price">300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Batata Harra</h3></div>
+        <div class="item-price">500,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Warak Inab</h3></div>
+        <div class="item-price">300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Hommos</h3></div>
+        <div class="item-price">450,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Soup</h3></div>
+        <div class="item-price">300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Karnabit</h3></div>
+        <div class="item-price">540,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>French Fries</h3></div>
+        <div class="item-price">400,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Grilled Potato</h3></div>
+        <div class="item-price">400,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Small Toum</h3></div>
+        <div class="item-price">100,000 LL</div>
+      </div>
+    </div>
+
+    <!-- COMBOS -->
+    <div class="menu-section" id="combos">
+      <h2>🍔 Combo's</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Combo Saj Burger</h3></div>
+        <div class="item-price">750,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Combo Mama Burger</h3></div>
+        <div class="item-price">750,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Combo Chicken Burger</h3></div>
+        <div class="item-price">750,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Combo Jawaneh</h3></div>
+        <div class="item-price">750,000 LL</div>
+      </div>
+    </div>
+
+    <!-- TABLIYEH -->
+    <div class="menu-section" id="tabliyeh">
+      <h2>🪵 Tabliyeh</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Set Menu Taouk</h3></div>
+        <div class="item-price">1,650,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Set Menu Kabab</h3></div>
+        <div class="item-price">1,650,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Set Menu Lahmeh</h3></div>
+        <div class="item-price">1,750,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Taouk</h3></div>
+        <div class="item-price">900,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Kabab Massaad</h3></div>
+        <div class="item-price">900,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Lahmeh</h3></div>
+        <div class="item-price">1,000,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Soujouk</h3></div>
+        <div class="item-price">880,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Makanek</h3></div>
+        <div class="item-price">880,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Arayess Kafta</h3></div>
+        <div class="item-price">1,080,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Arayess Massaad Chicken</h3></div>
+        <div class="item-price">990,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Light Taouk</h3></div>
+        <div class="item-price">910,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Light Kabab</h3></div>
+        <div class="item-price">910,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Light Lahme</h3></div>
+        <div class="item-price">1,010,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Light Soujouk</h3></div>
+        <div class="item-price">890,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tablieh Light Makanek</h3></div>
+        <div class="item-price">890,000 LL</div>
+      </div>
+    </div>
+
+    <!-- SANDWICHES -->
+    <div class="menu-section" id="sandwiches">
+      <h2>🥙 Sandwiches</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Taouk</h3></div>
+        <div class="item-price">550,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Kabab</h3></div>
+        <div class="item-price">550,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Lahmeh</h3></div>
+        <div class="item-price">650,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Soujouk</h3></div>
+        <div class="item-price">530,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Makanek</h3></div>
+        <div class="item-price">530,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Arayess Chicken Sand</h3></div>
+        <div class="item-price">600,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Arayess Kafta</h3></div>
+        <div class="item-price">700,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Potato</h3></div>
+        <div class="item-price">250,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Sandwich Karnabit</h3></div>
+        <div class="item-price">350,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Light Taouk Sand</h3></div>
+        <div class="item-price">560,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Light Lahmeh Sand</h3></div>
+        <div class="item-price">660,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Light Kabab Sand</h3></div>
+        <div class="item-price">560,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Light Soujouk Sand</h3></div>
+        <div class="item-price">540,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Light Makanek Sand</h3></div>
+        <div class="item-price">540,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Chicken Burger</h3></div>
+        <div class="item-price">550,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Mama Burger</h3></div>
+        <div class="item-price">650,000 LL</div>
+      </div>
+    </div>
+
+    <!-- GRILLS & PLATTERS -->
+    <div class="menu-section" id="grills">
+      <h2>🔥 Grills & Platters</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Taouk</h3></div>
+        <div class="item-price"><span>1/2 KG</span> 2,250,000 LL <span>1 KG</span> 4,050,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Kabab</h3></div>
+        <div class="item-price"><span>1/2 KG</span> 2,250,000 LL <span>1 KG</span> 4,050,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Lahme</h3></div>
+        <div class="item-price"><span>1/2 KG</span> 2,430,000 LL <span>1 KG</span> 4,450,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Ras Assfour</h3></div>
+        <div class="item-price">1,440,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Fakharet Makanek</h3></div>
+        <div class="item-price">1,260,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Fakharet Soujouk</h3></div>
+        <div class="item-price">1,260,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Lahmeh</h3></div>
+        <div class="item-price">1,300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Kabab</h3></div>
+        <div class="item-price">1,200,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Soujouk</h3></div>
+        <div class="item-price">1,180,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Makanek</h3></div>
+        <div class="item-price">1,180,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Taouk</h3></div>
+        <div class="item-price">1,200,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Mixed Grill — 1 Person</h3></div>
+        <div class="item-price">1,440,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Mixed Grill — 2 Persons</h3></div>
+        <div class="item-price">2,430,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Platter Mixed Grill — 4 People</h3></div>
+        <div class="item-price">4,200,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Add l Taouk</h3></div>
+        <div class="item-price">420,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Add l Makanek</h3></div>
+        <div class="item-price">420,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Add l Lahmeh</h3></div>
+        <div class="item-price">520,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Add l Kabab</h3></div>
+        <div class="item-price">420,000 LL</div>
+      </div>
+    </div>
+
+    <!-- BEVERAGES -->
+    <div class="menu-section" id="beverages">
+      <h2>🥤 Beverages</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><h3>Mineral Water Large</h3></div>
+        <div class="item-price">150,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Mineral Water Small</h3></div>
+        <div class="item-price">50,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Perrier</h3></div>
+        <div class="item-price">130,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Pepsi</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Miranda</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>7up</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Diet Pepsi</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Diet 7up</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Ice Tea</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Laban Ayran</h3></div>
+        <div class="item-price">120,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Juice</h3></div>
+        <div class="item-price">358,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Beer</h3></div>
+        <div class="item-price">300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Mexican Beer</h3></div>
+        <div class="item-price">350,840 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Arak Glass</h3></div>
+        <div class="item-price">300,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Arak 1/4 Bottle</h3></div>
+        <div class="item-price">600,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Arak 1/2 Bottle</h3></div>
+        <div class="item-price">1,100,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Arak Bottle</h3></div>
+        <div class="item-price">1,611,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Hot Drinks</h3></div>
+        <div class="item-price">179,000 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Tea</h3></div>
+        <div class="item-price">89,500 LL</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><h3>Coffee Pot</h3></div>
+        <div class="item-price">350,000 LL</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 طبلية MASSAAD. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

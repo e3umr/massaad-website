@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#c9a84c" />
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reservations — طبلية MASSAAD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #1a1a1a;
+      color: #f0e6d3;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background-color: #111;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: #c9a84c;
+      letter-spacing: 2px;
+    }
+
+   .nav-links a {
+  color: #f0e6d3;
+  text-decoration: none;
+  margin-left: 40px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* UNDERLINE ANIMATION */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #c9a84c;
+  transition: width 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.nav-links a:hover {
+  color: #c9a84c;
+  transform: scale(1.15);
+  text-shadow: 0 0 12px #c9a84caa;
+  display: inline-block;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* ACTIVE PAGE */
+.nav-links a.active {
+  color: #c9a84c;
+  font-size: 15px;
+  text-shadow: 0 0 10px #c9a84c88;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+    /* PAGE HEADER */
+    .page-header {
+      text-align: center;
+      padding: 80px 20px 40px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 52px;
+      color: #c9a84c;
+    }
+
+    .page-header p {
+      color: #aaa;
+      margin-top: 10px;
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background-color: #c9a84c;
+      margin: 20px auto;
+    }
+
+    /* FORM */
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px 100px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background-color: #222;
+      border: 1px solid #333;
+      color: #f0e6d3;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #c9a84c;
+    }
+
+    .form-group select option {
+      background-color: #222;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group textarea {
+      height: 120px;
+      resize: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background-color: #c9a84c;
+      color: #111;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-transform: uppercase;
+    }
+
+    .submit-btn:hover { background-color: #e0be6a; }
+
+    /* SUCCESS MESSAGE */
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      background-color: #222;
+      border: 1px solid #c9a84c;
+      margin-top: 30px;
+    }
+
+    .success-msg h3 {
+      font-family: 'Playfair Display', serif;
+      color: #c9a84c;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .success-msg p {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      background-color: #111;
+      color: #666;
+      font-size: 13px;
+    }
+    @media (max-width: 768px) {
+  nav {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .nav-links a {
+  color: #f0e6d3;
+  text-decoration: none;
+  margin-left: 40px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #c9a84c;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #c9a84c;
+  transform: scale(1.15);
+  text-shadow: 0 0 12px #c9a84caa;
+  display: inline-block;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a.active {
+  color: #c9a84c;
+  font-size: 15px;
+  text-shadow: 0 0 10px #c9a84c88;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+  .page-header h1 {
+    font-size: 36px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">MASSAAD <span style="font-family: 'Amiri', serif; font-weight: 700;">طبلية</span></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+<a href="menu.html">Menu</a>
+<a href="order.html">Order</a>
+<a href="reservations.html" class="active">Reservations</a>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>Reserve a Table</h1>
+    <div class="divider"></div>
+    <p>WE'LL BE WAITING FOR YOU</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-container">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="firstName" placeholder="John" />
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="lastName" placeholder="Doe" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="+961 xx xxx xxx" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="date" />
+      </div>
+      <div class="form-group">
+        <label>Time</label>
+        <input type="time" id="time" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Number of Guests</label>
+      <select id="guests">
+        <option value="">Select guests</option>
+        <option>1 Person</option>
+        <option>2 People</option>
+        <option>3 People</option>
+        <option>4 People</option>
+        <option>5 People</option>
+        <option>6 People</option>
+        <option>7+ People</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Special Requests (Optional)</label>
+      <textarea id="notes" placeholder="Any allergies, special occasions, seating preferences..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="submitReservation()">Confirm Reservation</button>
+
+    <div class="success-msg" id="successMsg">
+      <h3>Reservation Confirmed! 🎉</h3>
+      <p>Thank you! We'll contact you shortly to confirm your booking.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2025 طبلية MASSAAD. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCoNPG1yreCMOOs33nJy08OO9vbIn7PMk4",
+    authDomain: "massaad-website.firebaseapp.com",
+    projectId: "massaad-website",
+    storageBucket: "massaad-website.firebasestorage.app",
+    messagingSenderId: "368742651360",
+    appId: "1:368742651360:web:2ef70acf15628903938785"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.submitReservation = async function() {
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const phone = document.getElementById('phone').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const guests = document.getElementById('guests').value;
+    const notes = document.getElementById('notes').value;
+
+    if (!firstName || !phone || !date || !time || !guests) {
+      alert('Please fill in all required fields!');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "reservations"), {
+        firstName,
+        lastName,
+        phone,
+        date,
+        time,
+        guests,
+        notes,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById('successMsg').style.display = 'block';
+      document.querySelector('.submit-btn').style.display = 'none';
+
+    } catch (error) {
+      alert('Something went wrong. Please try again.');
+      console.error(error);
+    }
+  }
+</script>
+
+</body>
+</html>

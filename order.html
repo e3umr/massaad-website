@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order — MASSAAD طبلية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold: #c9a84c;
+      --dark: #1a1a1a;
+      --darker: #111;
+      --cream: #f0e6d3;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark);
+      color: var(--cream);
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* CURSOR */
+    .cursor { width: 12px; height: 12px; background-color: var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; }
+    .cursor-follower { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: all 0.1s ease; opacity: 0.6; }
+
+    /* NAVBAR */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 60px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background-color: rgba(17,17,17,0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 30px rgba(0,0,0,0.5);
+    }
+
+    .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); letter-spacing: 3px; }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      margin-left: 40px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background-color: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--gold); text-shadow: 0 0 12px #c9a84caa; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--gold); text-shadow: 0 0 10px #c9a84c88; }
+    .nav-links a.active::after { width: 100%; }
+
+    /* PAGE HERO */
+    .page-hero {
+      height: 35vh;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                  url('https://images.unsplash.com/photo-1544025162-d76694265947?w=1600') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 72px;
+    }
+
+    .page-hero .label {
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .page-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      color: var(--cream);
+    }
+
+    .divider { width: 60px; height: 1px; background-color: var(--gold); margin: 16px auto 0; }
+
+    /* LAYOUT */
+    .order-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* TABS */
+   .tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 90px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all 0.3s ease;
+  gap: 8px;
+}
+
+.tab-btn .tab-icon {
+  font-size: 28px;
+  transition: transform 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(201, 168, 76, 0.08);
+  box-shadow: 0 0 16px #c9a84c33;
+  transform: translateY(-3px);
+}
+
+.tab-btn:hover .tab-icon { transform: scale(1.2); }
+
+.tab-btn.active {
+  background: rgba(201, 168, 76, 0.12);
+  box-shadow: 0 0 20px #c9a84c44;
+  transform: translateY(-3px);
+  font-weight: 600;
+}
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: var(--gold);
+      margin-bottom: 30px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .menu-category { display: none; }
+    .menu-category.active { display: block; }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #222;
+      transition: all 0.3s ease;
+    }
+
+    .order-item:hover { padding-left: 10px; border-bottom-color: var(--gold); }
+
+    .order-item-info h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+      transition: color 0.3s;
+    }
+
+    .order-item:hover .order-item-info h3 { color: var(--gold); }
+
+    .order-item-info p { font-size: 12px; color: var(--gold); margin-top: 3px; opacity: 0.8; }
+
+    .add-btn {
+      padding: 8px 20px;
+      background-color: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: none;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      background-color: var(--gold);
+      color: var(--darker);
+      box-shadow: 0 0 12px #c9a84c66;
+    }
+
+    /* CART */
+    .cart {
+      background-color: var(--darker);
+      padding: 40px;
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+      border: 1px solid #222;
+    }
+
+    .cart h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .cart-subtitle {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #444;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #222;
+    }
+
+    .cart-empty { color: #444; font-size: 13px; text-align: center; padding: 40px 0; letter-spacing: 1px; }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .cart-item-name { flex: 1; color: var(--cream); font-size: 13px; }
+    .cart-item-price { color: var(--gold); font-weight: 600; margin: 0 12px; font-size: 12px; }
+
+    .remove-btn { background: none; border: none; color: #333; cursor: none; font-size: 14px; transition: color 0.3s; }
+    .remove-btn:hover { color: #e74c3c; }
+
+    .cart-total {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .cart-total span:last-child { color: var(--gold); }
+
+    .delivery-form { margin-top: 24px; display: none; }
+    .delivery-form.visible { display: block; }
+
+    .delivery-form input {
+      width: 100%;
+      padding: 14px 16px;
+      background-color: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: var(--cream);
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+      letter-spacing: 1px;
+      transition: border 0.3s;
+    }
+
+    .delivery-form input:focus { border-color: var(--gold); }
+    .delivery-form input::placeholder { color: #444; }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 16px;
+      background-color: var(--gold);
+      color: var(--darker);
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      cursor: none;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .checkout-btn:hover {
+      background-color: #e0be6a;
+      box-shadow: 0 10px 30px rgba(201,168,76,0.3);
+      transform: translateY(-2px);
+    }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 30px 20px;
+      border: 1px solid var(--gold);
+      margin-top: 20px;
+    }
+
+    .success-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 22px; margin-bottom: 10px; }
+    .success-msg p { color: #666; font-size: 13px; letter-spacing: 1px; }
+
+    /* FOOTER */
+    footer {
+      background-color: var(--darker);
+      padding: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      border-top: 1px solid #222;
+    }
+
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); letter-spacing: 2px; margin-bottom: 16px; }
+    .footer-desc { font-size: 13px; color: #666; line-height: 1.8; }
+    .footer-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .footer-links a { display: block; color: #666; text-decoration: none; font-size: 13px; margin-bottom: 10px; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--cream); }
+    .footer-info p { font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.8; }
+    .footer-bottom { background-color: var(--darker); text-align: center; padding: 20px; border-top: 1px solid #1a1a1a; font-size: 12px; color: #444; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; flex-direction: column; gap: 10px; }
+      .nav-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+      .nav-links a { margin-left: 0; font-size: 12px; }
+      .page-hero { height: 28vh; }
+      .page-hero h1 { font-size: 36px; }
+      .order-layout { grid-template-columns: 1fr; padding: 40px 20px 80px; }
+      .cart { position: static; }
+      footer { grid-template-columns: 1fr; padding: 40px 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <nav>
+    <div class="logo">MASSAAD <span style="font-family:'Amiri',serif; font-weight:700;">طبلية</span></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="order.html" class="active">Order</a>
+      <a href="reservations.html">Reservations</a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <p class="label">Fresh to Your Door</p>
+    <h1>Order Online</h1>
+    <div class="divider"></div>
+  </div>
+
+  <div class="order-layout">
+    <div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showCategory('starters', event)">Starters</button>
+        <button class="tab-btn" onclick="showCategory('combos', event)">Combo's</button>
+        <button class="tab-btn" onclick="showCategory('tabliyeh', event)">Tabliyeh</button>
+        <button class="tab-btn" onclick="showCategory('sandwiches', event)">Sandwiches</button>
+        <button class="tab-btn" onclick="showCategory('grills', event)">Grills & Platters</button>
+        <button class="tab-btn" onclick="showCategory('beverages', event)">Beverages</button>
+      </div>
+
+      <!-- STARTERS -->
+      <div class="menu-category active" id="cat-starters">
+        <div class="section-title">🥗 Starters</div>
+        <div class="order-item"><div class="order-item-info"><h3>Tabbouleh (Half)</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Tabbouleh (Half)', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tabbouleh (Whole)</h3><p>540,000 LL</p></div><button class="add-btn" onclick="addToCart('Tabbouleh (Whole)', 540000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Fattouch (Half)</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Fattouch (Half)', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Fattouch (Whole)</h3><p>540,000 LL</p></div><button class="add-btn" onclick="addToCart('Fattouch (Whole)', 540000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Rakakat Jebneh</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Rakakat Jebneh', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Batata Harra</h3><p>500,000 LL</p></div><button class="add-btn" onclick="addToCart('Batata Harra', 500000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Warak Inab</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Warak Inab', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Hommos</h3><p>450,000 LL</p></div><button class="add-btn" onclick="addToCart('Hommos', 450000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Soup</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Soup', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Karnabit</h3><p>540,000 LL</p></div><button class="add-btn" onclick="addToCart('Karnabit', 540000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>French Fries</h3><p>400,000 LL</p></div><button class="add-btn" onclick="addToCart('French Fries', 400000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Grilled Potato</h3><p>400,000 LL</p></div><button class="add-btn" onclick="addToCart('Grilled Potato', 400000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Small Toum</h3><p>100,000 LL</p></div><button class="add-btn" onclick="addToCart('Small Toum', 100000)">+ Add</button></div>
+      </div>
+
+      <!-- COMBOS -->
+      <div class="menu-category" id="cat-combos">
+        <div class="section-title">🍔 Combo's</div>
+        <div class="order-item"><div class="order-item-info"><h3>Combo Saj Burger</h3><p>750,000 LL</p></div><button class="add-btn" onclick="addToCart('Combo Saj Burger', 750000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Combo Mama Burger</h3><p>750,000 LL</p></div><button class="add-btn" onclick="addToCart('Combo Mama Burger', 750000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Combo Chicken Burger</h3><p>750,000 LL</p></div><button class="add-btn" onclick="addToCart('Combo Chicken Burger', 750000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Combo Jawaneh</h3><p>750,000 LL</p></div><button class="add-btn" onclick="addToCart('Combo Jawaneh', 750000)">+ Add</button></div>
+      </div>
+
+      <!-- TABLIYEH -->
+      <div class="menu-category" id="cat-tabliyeh">
+        <div class="section-title">🪵 Tabliyeh</div>
+        <div class="order-item"><div class="order-item-info"><h3>Set Menu Taouk</h3><p>1,650,000 LL</p></div><button class="add-btn" onclick="addToCart('Set Menu Taouk', 1650000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Set Menu Kabab</h3><p>1,650,000 LL</p></div><button class="add-btn" onclick="addToCart('Set Menu Kabab', 1650000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Set Menu Lahmeh</h3><p>1,750,000 LL</p></div><button class="add-btn" onclick="addToCart('Set Menu Lahmeh', 1750000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Taouk</h3><p>900,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Taouk', 900000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Kabab Massaad</h3><p>900,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Kabab Massaad', 900000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Lahmeh</h3><p>1,000,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Lahmeh', 1000000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Soujouk</h3><p>880,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Soujouk', 880000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Makanek</h3><p>880,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Makanek', 880000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Arayess Kafta</h3><p>1,080,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Arayess Kafta', 1080000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Arayess Massaad Chicken</h3><p>990,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Arayess Massaad Chicken', 990000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Light Taouk</h3><p>910,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Light Taouk', 910000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Light Kabab</h3><p>910,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Light Kabab', 910000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Light Lahme</h3><p>1,010,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Light Lahme', 1010000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Light Soujouk</h3><p>890,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Light Soujouk', 890000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tablieh Light Makanek</h3><p>890,000 LL</p></div><button class="add-btn" onclick="addToCart('Tablieh Light Makanek', 890000)">+ Add</button></div>
+      </div>
+
+      <!-- SANDWICHES -->
+      <div class="menu-category" id="cat-sandwiches">
+        <div class="section-title">🥙 Sandwiches</div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Taouk</h3><p>550,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Taouk', 550000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Kabab</h3><p>550,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Kabab', 550000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Lahmeh</h3><p>650,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Lahmeh', 650000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Soujouk</h3><p>530,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Soujouk', 530000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Makanek</h3><p>530,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Makanek', 530000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arayess Chicken Sandwich</h3><p>600,000 LL</p></div><button class="add-btn" onclick="addToCart('Arayess Chicken Sandwich', 600000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Arayess Kafta</h3><p>700,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Arayess Kafta', 700000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Potato</h3><p>250,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Potato', 250000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Sandwich Karnabit</h3><p>350,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Karnabit', 350000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Light Taouk Sand</h3><p>560,000 LL</p></div><button class="add-btn" onclick="addToCart('Light Taouk Sand', 560000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Light Lahmeh Sand</h3><p>660,000 LL</p></div><button class="add-btn" onclick="addToCart('Light Lahmeh Sand', 660000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Light Kabab Sand</h3><p>560,000 LL</p></div><button class="add-btn" onclick="addToCart('Light Kabab Sand', 560000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Light Soujouk Sand</h3><p>540,000 LL</p></div><button class="add-btn" onclick="addToCart('Light Soujouk Sand', 540000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Light Makanek Sand</h3><p>540,000 LL</p></div><button class="add-btn" onclick="addToCart('Light Makanek Sand', 540000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Chicken Burger</h3><p>550,000 LL</p></div><button class="add-btn" onclick="addToCart('Chicken Burger', 550000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Mama Burger</h3><p>650,000 LL</p></div><button class="add-btn" onclick="addToCart('Mama Burger', 650000)">+ Add</button></div>
+      </div>
+
+      <!-- GRILLS & PLATTERS -->
+      <div class="menu-category" id="cat-grills">
+        <div class="section-title">🔥 Grills & Platters</div>
+        <div class="order-item"><div class="order-item-info"><h3>Taouk 1/2 KG</h3><p>2,250,000 LL</p></div><button class="add-btn" onclick="addToCart('Taouk 1/2 KG', 2250000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Taouk 1 KG</h3><p>4,050,000 LL</p></div><button class="add-btn" onclick="addToCart('Taouk 1 KG', 4050000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Kabab 1/2 KG</h3><p>2,250,000 LL</p></div><button class="add-btn" onclick="addToCart('Kabab 1/2 KG', 2250000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Kabab 1 KG</h3><p>4,050,000 LL</p></div><button class="add-btn" onclick="addToCart('Kabab 1 KG', 4050000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Lahme 1/2 KG</h3><p>2,430,000 LL</p></div><button class="add-btn" onclick="addToCart('Lahme 1/2 KG', 2430000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Lahme 1 KG</h3><p>4,450,000 LL</p></div><button class="add-btn" onclick="addToCart('Lahme 1 KG', 4450000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Ras Assfour</h3><p>1,440,000 LL</p></div><button class="add-btn" onclick="addToCart('Ras Assfour', 1440000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Fakharet Makanek</h3><p>1,260,000 LL</p></div><button class="add-btn" onclick="addToCart('Fakharet Makanek', 1260000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Fakharet Soujouk</h3><p>1,260,000 LL</p></div><button class="add-btn" onclick="addToCart('Fakharet Soujouk', 1260000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Lahmeh</h3><p>1,300,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Lahmeh', 1300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Kabab</h3><p>1,200,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Kabab', 1200000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Soujouk</h3><p>1,180,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Soujouk', 1180000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Makanek</h3><p>1,180,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Makanek', 1180000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Taouk</h3><p>1,200,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Taouk', 1200000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Mixed Grill — 1 Person</h3><p>1,440,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Mixed Grill (1 Person)', 1440000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Mixed Grill — 2 Persons</h3><p>2,430,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Mixed Grill (2 Persons)', 2430000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Platter Mixed Grill — 4 People</h3><p>4,200,000 LL</p></div><button class="add-btn" onclick="addToCart('Platter Mixed Grill (4 People)', 4200000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Add'l Taouk</h3><p>420,000 LL</p></div><button class="add-btn" onclick="addToCart('Addl Taouk', 420000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Add'l Makanek</h3><p>420,000 LL</p></div><button class="add-btn" onclick="addToCart('Addl Makanek', 420000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Add'l Lahmeh</h3><p>520,000 LL</p></div><button class="add-btn" onclick="addToCart('Addl Lahmeh', 520000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Add'l Kabab</h3><p>420,000 LL</p></div><button class="add-btn" onclick="addToCart('Addl Kabab', 420000)">+ Add</button></div>
+      </div>
+
+      <!-- BEVERAGES -->
+      <div class="menu-category" id="cat-beverages">
+        <div class="section-title">🥤 Beverages</div>
+        <div class="order-item"><div class="order-item-info"><h3>Mineral Water Large</h3><p>150,000 LL</p></div><button class="add-btn" onclick="addToCart('Mineral Water Large', 150000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Mineral Water Small</h3><p>50,000 LL</p></div><button class="add-btn" onclick="addToCart('Mineral Water Small', 50000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Perrier</h3><p>130,000 LL</p></div><button class="add-btn" onclick="addToCart('Perrier', 130000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Pepsi</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Pepsi', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Miranda</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Miranda', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>7up</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('7up', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Diet Pepsi</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Diet Pepsi', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Diet 7up</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Diet 7up', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Ice Tea</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Ice Tea', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Laban Ayran</h3><p>120,000 LL</p></div><button class="add-btn" onclick="addToCart('Laban Ayran', 120000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Juice</h3><p>358,000 LL</p></div><button class="add-btn" onclick="addToCart('Juice', 358000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Beer</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Beer', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Mexican Beer</h3><p>350,840 LL</p></div><button class="add-btn" onclick="addToCart('Mexican Beer', 350840)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arak Glass</h3><p>300,000 LL</p></div><button class="add-btn" onclick="addToCart('Arak Glass', 300000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arak 1/4 Bottle</h3><p>600,000 LL</p></div><button class="add-btn" onclick="addToCart('Arak 1/4 Bottle', 600000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arak 1/2 Bottle</h3><p>1,100,000 LL</p></div><button class="add-btn" onclick="addToCart('Arak 1/2 Bottle', 1100000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arak Bottle</h3><p>1,611,000 LL</p></div><button class="add-btn" onclick="addToCart('Arak Bottle', 1611000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Hot Drinks</h3><p>179,000 LL</p></div><button class="add-btn" onclick="addToCart('Hot Drinks', 179000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Tea</h3><p>89,500 LL</p></div><button class="add-btn" onclick="addToCart('Tea', 89500)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Coffee Pot</h3><p>350,000 LL</p></div><button class="add-btn" onclick="addToCart('Coffee Pot', 350000)">+ Add</button></div>
+      </div>
+    </div>
+
+    <!-- CART -->
+    <div class="cart">
+      <h2>Your Order</h2>
+      <p class="cart-subtitle">Review & Checkout</p>
+      <div id="cartItems"><p class="cart-empty">Your cart is empty</p></div>
+      <div class="cart-total" id="cartTotal" style="display:none;">
+        <span>Total</span>
+        <span id="totalAmount">0 LL</span>
+      </div>
+      <div class="delivery-form" id="deliveryForm">
+        <input type="text" id="custName" placeholder="Your Name" />
+        <input type="tel" id="custPhone" placeholder="Phone Number" />
+        <input type="text" id="custAddress" placeholder="Delivery Address" />
+        <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
+      </div>
+      <div class="success-msg" id="successMsg">
+        <h3>Order Placed! 🎉</h3>
+        <p>We received your order and will call you shortly.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>
+      <div class="footer-logo">MASSAAD <span style="font-family:'Amiri',serif;">طبلية</span></div>
+      <p class="footer-desc">The original Lebanese Tabliyeh experience. Crafted with passion, served with pride.</p>
+    </div>
+    <div>
+      <div class="footer-title">Navigation</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="order.html">Order Online</a>
+        <a href="reservations.html">Reservations</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Visit Us</div>
+      <div class="footer-info">
+        <p>📍 Lebanon</p>
+        <p>📞 +961 xx xxx xxx</p>
+        <p>🕐 Mon–Sun: 12PM – 12AM</p>
+      </div>
+    </div>
+  </footer>
+  <div class="footer-bottom">© 2026 MASSAAD طبلية. All rights reserved.</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoNPG1yreCMOOs33nJy08OO9vbIn7PMk4",
+      authDomain: "massaad-website.firebaseapp.com",
+      projectId: "massaad-website",
+      storageBucket: "massaad-website.firebasestorage.app",
+      messagingSenderId: "368742651360",
+      appId: "1:368742651360:web:2ef70acf15628903938785"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let cart = [];
+
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX - 6 + 'px';
+      cursor.style.top = e.clientY - 6 + 'px';
+      setTimeout(() => {
+        follower.style.left = e.clientX - 18 + 'px';
+        follower.style.top = e.clientY - 18 + 'px';
+      }, 80);
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; follower.style.transform = 'scale(1.5)'; });
+      el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; follower.style.transform = 'scale(1)'; });
+    });
+
+    window.showCategory = function(cat, event) {
+      document.querySelectorAll('.menu-category').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('cat-' + cat).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    window.addToCart = function(name, price) {
+      const existing = cart.find(i => i.name === name);
+      if (existing) { existing.qty++; }
+      else { cart.push({ name, price, qty: 1 }); }
+      renderCart();
+    }
+
+    window.removeFromCart = function(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartDiv = document.getElementById('cartItems');
+      const totalDiv = document.getElementById('cartTotal');
+      const deliveryForm = document.getElementById('deliveryForm');
+      if (cart.length === 0) {
+        cartDiv.innerHTML = '<p class="cart-empty">Your cart is empty</p>';
+        totalDiv.style.display = 'none';
+        deliveryForm.classList.remove('visible');
+        return;
+      }
+      let total = 0;
+      cartDiv.innerHTML = cart.map((item, i) => {
+        total += item.price * item.qty;
+        return `<div class="cart-item">
+          <span class="cart-item-name">${item.qty}x ${item.name}</span>
+          <span class="cart-item-price">${(item.price * item.qty).toLocaleString()} LL</span>
+          <button class="remove-btn" onclick="removeFromCart(${i})">✕</button>
+        </div>`;
+      }).join('');
+      totalDiv.style.display = 'flex';
+      document.getElementById('totalAmount').textContent = total.toLocaleString() + ' LL';
+      deliveryForm.classList.add('visible');
+    }
+
+    window.placeOrder = async function() {
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const address = document.getElementById('custAddress').value;
+      if (!name || !phone || !address) { alert('Please fill in your name, phone and address!'); return; }
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      try {
+        await addDoc(collection(db, "orders"), {
+          customerName: name, phone, address, items: cart, total, createdAt: serverTimestamp()
+        });
+        document.getElementById('deliveryForm').style.display = 'none';
+        document.getElementById('cartTotal').style.display = 'none';
+        document.getElementById('cartItems').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        cart = [];
+      } catch (error) {
+        alert('Something went wrong. Please try again.');
+        console.error(error);
+      }
+    }
+  </script>
+
+</body>
+</html>
