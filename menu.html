@@ -459,29 +459,43 @@
   <div class="footer-bottom">© 2026 MASSAAD طبلية. All rights reserved.</div>
 
   <script>
-    // CURSOR
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursorFollower');
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX - 6 + 'px';
-      cursor.style.top = e.clientY - 6 + 'px';
-      setTimeout(() => {
-        follower.style.left = e.clientX - 18 + 'px';
-        follower.style.top = e.clientY - 18 + 'px';
-      }, 80);
-    });
-    document.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; follower.style.transform = 'scale(1.5)'; });
-      el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; follower.style.transform = 'scale(1)'; });
-    });
+  const cursor = document.getElementById('cursor');
+  const follower = document.getElementById('cursorFollower');
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX - 6 + 'px';
+    cursor.style.top = e.clientY - 6 + 'px';
+    setTimeout(() => {
+      follower.style.left = e.clientX - 18 + 'px';
+      follower.style.top = e.clientY - 18 + 'px';
+    }, 80);
+  });
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; follower.style.transform = 'scale(1.5)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; follower.style.transform = 'scale(1)'; });
+  });
 
-    // TABS
-    function scrollToSection(id, event) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.closest('.tab-btn').classList.add('active');
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
-  </script>
+  function scrollToSection(id, event) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.tab-btn').classList.add('active');
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // SCROLL SYNC
+  const sections = ['starters', 'combos', 'tabliyeh', 'sandwiches', 'grills', 'beverages'];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        const index = sections.indexOf(id);
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-150px 0px -50% 0px' });
+
+  sections.forEach(id => observer.observe(document.getElementById(id)));
+</script>
 
 </body>
 </html>
+
