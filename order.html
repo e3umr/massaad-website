@@ -32,20 +32,16 @@
       overflow-x: hidden;
     }
 
-    /* CURSOR */
     .cursor { width: 12px; height: 12px; background-color: var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; }
     .cursor-follower { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: all 0.1s ease; opacity: 0.6; }
 
-    /* NAVBAR */
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 24px 60px;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 100;
       background-color: rgba(17,17,17,0.95);
       backdrop-filter: blur(10px);
@@ -80,7 +76,6 @@
     .nav-links a.active { color: var(--gold); text-shadow: 0 0 10px #c9a84c88; }
     .nav-links a.active::after { width: 100%; }
 
-    /* PAGE HERO */
     .page-hero {
       height: 35vh;
       background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
@@ -109,7 +104,6 @@
 
     .divider { width: 60px; height: 1px; background-color: var(--gold); margin: 16px auto 0; }
 
-    /* LAYOUT */
     .order-layout {
       display: grid;
       grid-template-columns: 1fr 380px;
@@ -119,36 +113,49 @@
       padding: 60px 40px 100px;
     }
 
-    /* TABS */
-    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    /* ICON TABS */
+    .tabs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
 
     .tab-btn {
-      padding: 10px 22px;
-      border: 1px solid #333;
-      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 90px;
+      border: 1px solid #2a2a2a;
+      background: var(--darker);
       color: #888;
       font-family: 'Poppins', sans-serif;
-      font-size: 12px;
-      letter-spacing: 2px;
+      font-size: 11px;
+      letter-spacing: 1px;
       text-transform: uppercase;
       cursor: none;
       transition: all 0.3s ease;
+      gap: 8px;
+    }
+
+    .tab-btn .tab-icon {
+      font-size: 28px;
+      transition: transform 0.3s ease;
     }
 
     .tab-btn:hover {
       border-color: var(--gold);
       color: var(--gold);
-      box-shadow: 0 0 12px #c9a84c44;
-      transform: scale(1.05);
+      box-shadow: 0 0 16px #c9a84c33;
+      transform: translateY(-3px);
     }
+
+    .tab-btn:hover .tab-icon { transform: scale(1.2); }
 
     .tab-btn.active {
       border-color: var(--gold);
-      background-color: var(--gold);
-      color: var(--darker);
+      background: linear-gradient(135deg, #1a1500, #111);
+      color: var(--gold);
+      box-shadow: 0 0 20px #c9a84c44;
+      transform: translateY(-3px);
       font-weight: 600;
-      box-shadow: 0 0 16px #c9a84c66;
-      transform: scale(1.05);
     }
 
     .section-title {
@@ -182,7 +189,6 @@
     }
 
     .order-item:hover .order-item-info h3 { color: var(--gold); }
-
     .order-item-info p { font-size: 12px; color: var(--gold); margin-top: 3px; opacity: 0.8; }
 
     .add-btn {
@@ -205,7 +211,6 @@
       box-shadow: 0 0 12px #c9a84c66;
     }
 
-    /* CART */
     .cart {
       background-color: var(--darker);
       padding: 40px;
@@ -215,49 +220,17 @@
       border: 1px solid #222;
     }
 
-    .cart h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-
-    .cart-subtitle {
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: #444;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #222;
-    }
-
+    .cart h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--gold); margin-bottom: 6px; }
+    .cart-subtitle { font-size: 11px; letter-spacing: 3px; color: #444; text-transform: uppercase; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #222; }
     .cart-empty { color: #444; font-size: 13px; text-align: center; padding: 40px 0; letter-spacing: 1px; }
 
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #1a1a1a;
-    }
-
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
     .cart-item-name { flex: 1; color: var(--cream); font-size: 13px; }
     .cart-item-price { color: var(--gold); font-weight: 600; margin: 0 12px; font-size: 12px; }
-
     .remove-btn { background: none; border: none; color: #333; cursor: none; font-size: 14px; transition: color 0.3s; }
     .remove-btn:hover { color: #e74c3c; }
 
-    .cart-total {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #333;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
-      font-size: 15px;
-    }
-
+    .cart-total { margin-top: 20px; padding-top: 16px; border-top: 1px solid #333; display: flex; justify-content: space-between; font-weight: 600; font-size: 15px; }
     .cart-total span:last-child { color: var(--gold); }
 
     .delivery-form { margin-top: 24px; display: none; }
@@ -296,24 +269,12 @@
       margin-top: 10px;
     }
 
-    .checkout-btn:hover {
-      background-color: #e0be6a;
-      box-shadow: 0 10px 30px rgba(201,168,76,0.3);
-      transform: translateY(-2px);
-    }
+    .checkout-btn:hover { background-color: #e0be6a; box-shadow: 0 10px 30px rgba(201,168,76,0.3); transform: translateY(-2px); }
 
-    .success-msg {
-      display: none;
-      text-align: center;
-      padding: 30px 20px;
-      border: 1px solid var(--gold);
-      margin-top: 20px;
-    }
-
+    .success-msg { display: none; text-align: center; padding: 30px 20px; border: 1px solid var(--gold); margin-top: 20px; }
     .success-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 22px; margin-bottom: 10px; }
     .success-msg p { color: #666; font-size: 13px; letter-spacing: 1px; }
 
-    /* FOOTER */
     footer {
       background-color: var(--darker);
       padding: 60px;
@@ -331,7 +292,6 @@
     .footer-info p { font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.8; }
     .footer-bottom { background-color: var(--darker); text-align: center; padding: 20px; border-top: 1px solid #1a1a1a; font-size: 12px; color: #444; }
 
-    /* MOBILE */
     @media (max-width: 768px) {
       nav { padding: 16px 20px; flex-direction: column; gap: 10px; }
       .nav-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
@@ -340,6 +300,8 @@
       .page-hero h1 { font-size: 36px; }
       .order-layout { grid-template-columns: 1fr; padding: 40px 20px 80px; }
       .cart { position: static; }
+      .tab-btn { width: 80px; height: 75px; font-size: 10px; }
+      .tab-btn .tab-icon { font-size: 22px; }
       footer { grid-template-columns: 1fr; padding: 40px 30px; }
     }
   </style>
@@ -368,12 +330,24 @@
   <div class="order-layout">
     <div>
       <div class="tabs">
-        <button class="tab-btn active" onclick="showCategory('starters', event)">Starters</button>
-        <button class="tab-btn" onclick="showCategory('combos', event)">Combo's</button>
-        <button class="tab-btn" onclick="showCategory('tabliyeh', event)">Tabliyeh</button>
-        <button class="tab-btn" onclick="showCategory('sandwiches', event)">Sandwiches</button>
-        <button class="tab-btn" onclick="showCategory('grills', event)">Grills & Platters</button>
-        <button class="tab-btn" onclick="showCategory('beverages', event)">Beverages</button>
+        <button class="tab-btn active" onclick="showCategory('starters', event)">
+          <span class="tab-icon">🥗</span>Starters
+        </button>
+        <button class="tab-btn" onclick="showCategory('combos', event)">
+          <span class="tab-icon">🍔</span>Combo's
+        </button>
+        <button class="tab-btn" onclick="showCategory('tabliyeh', event)">
+          <span class="tab-icon">🪵</span>Tabliyeh
+        </button>
+        <button class="tab-btn" onclick="showCategory('sandwiches', event)">
+          <span class="tab-icon">🥙</span>Sandwiches
+        </button>
+        <button class="tab-btn" onclick="showCategory('grills', event)">
+          <span class="tab-icon">🔥</span>Grills
+        </button>
+        <button class="tab-btn" onclick="showCategory('beverages', event)">
+          <span class="tab-icon">🥤</span>Beverages
+        </button>
       </div>
 
       <!-- STARTERS -->
@@ -431,7 +405,7 @@
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Lahmeh</h3><p>650,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Lahmeh', 650000)">+ Add</button></div>
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Soujouk</h3><p>530,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Soujouk', 530000)">+ Add</button></div>
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Makanek</h3><p>530,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Makanek', 530000)">+ Add</button></div>
-        <div class="order-item"><div class="order-item-info"><h3>Arayess Chicken Sandwich</h3><p>600,000 LL</p></div><button class="add-btn" onclick="addToCart('Arayess Chicken Sandwich', 600000)">+ Add</button></div>
+        <div class="order-item"><div class="order-item-info"><h3>Arayess Chicken Sand</h3><p>600,000 LL</p></div><button class="add-btn" onclick="addToCart('Arayess Chicken Sand', 600000)">+ Add</button></div>
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Arayess Kafta</h3><p>700,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Arayess Kafta', 700000)">+ Add</button></div>
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Potato</h3><p>250,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Potato', 250000)">+ Add</button></div>
         <div class="order-item"><div class="order-item-info"><h3>Sandwich Karnabit</h3><p>350,000 LL</p></div><button class="add-btn" onclick="addToCart('Sandwich Karnabit', 350000)">+ Add</button></div>
@@ -444,7 +418,7 @@
         <div class="order-item"><div class="order-item-info"><h3>Mama Burger</h3><p>650,000 LL</p></div><button class="add-btn" onclick="addToCart('Mama Burger', 650000)">+ Add</button></div>
       </div>
 
-      <!-- GRILLS & PLATTERS -->
+      <!-- GRILLS -->
       <div class="menu-category" id="cat-grills">
         <div class="section-title">🔥 Grills & Platters</div>
         <div class="order-item"><div class="order-item-info"><h3>Taouk 1/2 KG</h3><p>2,250,000 LL</p></div><button class="add-btn" onclick="addToCart('Taouk 1/2 KG', 2250000)">+ Add</button></div>
@@ -560,7 +534,6 @@
     const db = getFirestore(app);
     let cart = [];
 
-    // CURSOR
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursorFollower');
     document.addEventListener('mousemove', (e) => {
@@ -580,7 +553,7 @@
       document.querySelectorAll('.menu-category').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById('cat-' + cat).classList.add('active');
-      event.target.classList.add('active');
+      event.target.closest('.tab-btn').classList.add('active');
     }
 
     window.addToCart = function(name, price) {
