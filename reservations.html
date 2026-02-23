@@ -1,132 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#c9a84c" />
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-  }
-</script>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reservations — طبلية MASSAAD</title>
+  <title>Reservations — MASSAAD طبلية</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&family=Amiri:wght@700&display=swap" rel="stylesheet"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --gold: #c9a84c;
+      --dark: #1a1a1a;
+      --darker: #111;
+      --cream: #f0e6d3;
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #1a1a1a;
-      color: #f0e6d3;
+      background-color: var(--dark);
+      color: var(--cream);
+      cursor: none;
+      overflow-x: hidden;
     }
+
+    .cursor { width: 12px; height: 12px; background-color: var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; }
+    .cursor-follower { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: all 0.1s ease; opacity: 0.6; }
 
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 60px;
-      background-color: #111;
-      position: sticky;
-      top: 0;
+      padding: 24px 60px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
       z-index: 100;
+      background-color: rgba(17,17,17,0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 30px rgba(0,0,0,0.5);
     }
 
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 24px;
-      color: #c9a84c;
+    .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); letter-spacing: 3px; }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      margin-left: 40px;
+      font-size: 13px;
       letter-spacing: 2px;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      position: relative;
+      transition: all 0.3s ease;
     }
 
-   .nav-links a {
-  color: #f0e6d3;
-  text-decoration: none;
-  margin-left: 40px;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding-bottom: 4px;
-  position: relative;
-  transition: all 0.3s ease;
-}
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background-color: var(--gold);
+      transition: width 0.3s ease;
+    }
 
-/* UNDERLINE ANIMATION */
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #c9a84c;
-  transition: width 0.3s ease;
-}
+    .nav-links a:hover { color: var(--gold); text-shadow: 0 0 12px #c9a84caa; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--gold); text-shadow: 0 0 10px #c9a84c88; }
+    .nav-links a.active::after { width: 100%; }
 
-/* HOVER EFFECT */
-.nav-links a:hover {
-  color: #c9a84c;
-  transform: scale(1.15);
-  text-shadow: 0 0 12px #c9a84caa;
-  display: inline-block;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
-}
-
-/* ACTIVE PAGE */
-.nav-links a.active {
-  color: #c9a84c;
-  font-size: 15px;
-  text-shadow: 0 0 10px #c9a84c88;
-}
-
-.nav-links a.active::after {
-  width: 100%;
-}
-
-    /* PAGE HEADER */
-    .page-header {
+    /* PAGE HERO */
+    .page-hero {
+      height: 35vh;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 80px 20px 40px;
+      margin-top: 72px;
     }
 
-    .page-header h1 {
+    .page-hero .label {
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .page-hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 52px;
-      color: #c9a84c;
+      font-size: 56px;
+      color: var(--cream);
     }
 
-    .page-header p {
-      color: #aaa;
-      margin-top: 10px;
-      font-size: 14px;
-      letter-spacing: 2px;
-    }
+    .divider { width: 60px; height: 1px; background-color: var(--gold); margin: 16px auto 0; }
 
-    .divider {
-      width: 60px;
-      height: 2px;
-      background-color: #c9a84c;
-      margin: 20px auto;
-    }
-
-    /* FORM */
-    .form-container {
-      max-width: 600px;
+    /* FORM SECTION */
+    .form-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px 100px;
+      padding: 80px 40px 100px;
+      gap: 80px;
+      align-items: start;
     }
 
-    .form-group {
+    .form-info .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .form-info h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      color: var(--cream);
+      line-height: 1.2;
       margin-bottom: 24px;
     }
 
+    .form-info p {
+      font-size: 14px;
+      color: #888;
+      line-height: 1.9;
+      margin-bottom: 40px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-icon {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .info-item span {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.6;
+    }
+
+    /* FORM */
+    .form-container { width: 100%; }
+
+    .form-group { margin-bottom: 20px; }
+
     .form-group label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 2px;
-      color: #aaa;
+      color: #666;
       margin-bottom: 8px;
       text-transform: uppercase;
     }
@@ -136,283 +183,283 @@
     .form-group textarea {
       width: 100%;
       padding: 14px 16px;
-      background-color: #222;
-      border: 1px solid #333;
-      color: #f0e6d3;
+      background-color: var(--darker);
+      border: 1px solid #2a2a2a;
+      color: var(--cream);
       font-family: 'Poppins', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       transition: border 0.3s;
+      letter-spacing: 1px;
     }
 
     .form-group input:focus,
     .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: #c9a84c;
-    }
+    .form-group textarea:focus { border-color: var(--gold); }
 
-    .form-group select option {
-      background-color: #222;
-    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #333; }
+
+    .form-group select { appearance: none; cursor: none; }
+    .form-group select option { background-color: var(--darker); }
+    .form-group textarea { height: 120px; resize: none; }
 
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .form-group textarea {
-      height: 120px;
-      resize: none;
+      gap: 16px;
     }
 
     .submit-btn {
       width: 100%;
-      padding: 16px;
-      background-color: #c9a84c;
-      color: #111;
+      padding: 18px;
+      background-color: var(--gold);
+      color: var(--darker);
       border: none;
       font-family: 'Poppins', sans-serif;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: background 0.3s;
+      letter-spacing: 3px;
+      cursor: none;
+      transition: all 0.3s ease;
       text-transform: uppercase;
+      margin-top: 10px;
     }
 
-    .submit-btn:hover { background-color: #e0be6a; }
+    .submit-btn:hover {
+      background-color: #e0be6a;
+      box-shadow: 0 10px 30px rgba(201,168,76,0.3);
+      transform: translateY(-2px);
+    }
 
-    /* SUCCESS MESSAGE */
     .success-msg {
       display: none;
       text-align: center;
-      padding: 30px;
-      background-color: #222;
-      border: 1px solid #c9a84c;
-      margin-top: 30px;
+      padding: 40px 30px;
+      border: 1px solid var(--gold);
+      margin-top: 20px;
     }
 
-    .success-msg h3 {
-      font-family: 'Playfair Display', serif;
-      color: #c9a84c;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
+    .success-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 28px; margin-bottom: 12px; }
+    .success-msg p { color: #666; font-size: 13px; letter-spacing: 1px; line-height: 1.8; }
 
-    .success-msg p {
-      color: #aaa;
-      font-size: 14px;
-    }
-
+    /* FOOTER */
     footer {
-      text-align: center;
-      padding: 30px;
-      background-color: #111;
-      color: #666;
-      font-size: 13px;
+      background-color: var(--darker);
+      padding: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      border-top: 1px solid #222;
     }
+
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); letter-spacing: 2px; margin-bottom: 16px; }
+    .footer-desc { font-size: 13px; color: #666; line-height: 1.8; }
+    .footer-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .footer-links a { display: block; color: #666; text-decoration: none; font-size: 13px; margin-bottom: 10px; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--cream); }
+    .footer-info p { font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.8; }
+    .footer-bottom { background-color: var(--darker); text-align: center; padding: 20px; border-top: 1px solid #1a1a1a; font-size: 12px; color: #444; }
+
     @media (max-width: 768px) {
-  nav {
-    padding: 16px 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .nav-links a {
-  color: #f0e6d3;
-  text-decoration: none;
-  margin-left: 40px;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding-bottom: 4px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #c9a84c;
-  transition: width 0.3s ease;
-}
-
-.nav-links a:hover {
-  color: #c9a84c;
-  transform: scale(1.15);
-  text-shadow: 0 0 12px #c9a84caa;
-  display: inline-block;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
-}
-
-.nav-links a.active {
-  color: #c9a84c;
-  font-size: 15px;
-  text-shadow: 0 0 10px #c9a84c88;
-}
-
-.nav-links a.active::after {
-  width: 100%;
-}
-
-  .page-header h1 {
-    font-size: 36px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
+      nav { padding: 16px 20px; flex-direction: column; gap: 10px; }
+      .nav-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+      .nav-links a { margin-left: 0; font-size: 12px; }
+      .page-hero { height: 28vh; }
+      .page-hero h1 { font-size: 36px; }
+      .form-wrapper { grid-template-columns: 1fr; padding: 40px 20px 80px; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-info h2 { font-size: 30px; }
+      footer { grid-template-columns: 1fr; padding: 40px 30px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
   <nav>
-    <div class="logo">MASSAAD <span style="font-family: 'Amiri', serif; font-weight: 700;">طبلية</span></div>
+    <div class="logo">MASSAAD <span style="font-family:'Amiri',serif; font-weight:700;">طبلية</span></div>
     <div class="nav-links">
       <a href="index.html">Home</a>
-<a href="menu.html">Menu</a>
-<a href="order.html">Order</a>
-<a href="reservations.html" class="active">Reservations</a>
+      <a href="menu.html">Menu</a>
+      <a href="order.html">Order</a>
+      <a href="reservations.html" class="active">Reservations</a>
     </div>
   </nav>
 
-  <!-- HEADER -->
-  <div class="page-header">
+  <div class="page-hero">
+    <p class="label">We'll Be Waiting For You</p>
     <h1>Reserve a Table</h1>
     <div class="divider"></div>
-    <p>WE'LL BE WAITING FOR YOU</p>
   </div>
 
-  <!-- FORM -->
-  <div class="form-container">
+  <div class="form-wrapper">
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" id="firstName" placeholder="John" />
-      </div>
-      <div class="form-group">
-        <label>Last Name</label>
-        <input type="text" id="lastName" placeholder="Doe" />
-      </div>
-    </div>
+    <!-- LEFT INFO -->
+    <div class="form-info">
+      <span class="label">Book Your Experience</span>
+      <h2>Join Us for an Unforgettable Evening</h2>
+      <p>Reserve your table at MASSAAD طبلية and experience the finest Lebanese tabliyeh tradition. We look forward to welcoming you.</p>
 
-    <div class="form-group">
-      <label>Phone Number</label>
-      <input type="tel" id="phone" placeholder="+961 xx xxx xxx" />
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="date" />
+      <div class="info-item">
+        <div class="info-icon">📍</div>
+        <span>Lebanon<br>Your favorite Lebanese spot</span>
       </div>
-      <div class="form-group">
-        <label>Time</label>
-        <input type="time" id="time" />
+      <div class="info-item">
+        <div class="info-icon">🕐</div>
+        <span>Monday – Sunday<br>12:00 PM – 12:00 AM</span>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📞</div>
+        <span>+961 xx xxx xxx<br>Call us for large group bookings</span>
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Number of Guests</label>
-      <select id="guests">
-        <option value="">Select guests</option>
-        <option>1 Person</option>
-        <option>2 People</option>
-        <option>3 People</option>
-        <option>4 People</option>
-        <option>5 People</option>
-        <option>6 People</option>
-        <option>7+ People</option>
-      </select>
+    <!-- FORM -->
+    <div class="form-container">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="firstName" placeholder="John" />
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lastName" placeholder="Doe" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="+961 xx xxx xxx" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="date" />
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="time" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Number of Guests</label>
+        <select id="guests">
+          <option value="">Select guests</option>
+          <option>1 Person</option>
+          <option>2 People</option>
+          <option>3 People</option>
+          <option>4 People</option>
+          <option>5 People</option>
+          <option>6 People</option>
+          <option>7+ People</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Special Requests (Optional)</label>
+        <textarea id="notes" placeholder="Allergies, special occasions, seating preferences..."></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitReservation()">Confirm Reservation</button>
+
+      <div class="success-msg" id="successMsg">
+        <h3>Reservation Confirmed! 🎉</h3>
+        <p>Thank you! We'll contact you shortly to confirm your booking.</p>
+      </div>
+
     </div>
-
-    <div class="form-group">
-      <label>Special Requests (Optional)</label>
-      <textarea id="notes" placeholder="Any allergies, special occasions, seating preferences..."></textarea>
-    </div>
-
-    <button class="submit-btn" onclick="submitReservation()">Confirm Reservation</button>
-
-    <div class="success-msg" id="successMsg">
-      <h3>Reservation Confirmed! 🎉</h3>
-      <p>Thank you! We'll contact you shortly to confirm your booking.</p>
-    </div>
-
   </div>
 
   <footer>
-    <p>© 2025 طبلية MASSAAD. All rights reserved.</p>
+    <div>
+      <div class="footer-logo">MASSAAD <span style="font-family:'Amiri',serif;">طبلية</span></div>
+      <p class="footer-desc">The original Lebanese Tabliyeh experience. Crafted with passion, served with pride.</p>
+    </div>
+    <div>
+      <div class="footer-title">Navigation</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="order.html">Order Online</a>
+        <a href="reservations.html">Reservations</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Visit Us</div>
+      <div class="footer-info">
+        <p>📍 Lebanon</p>
+        <p>📞 +961 xx xxx xxx</p>
+        <p>🕐 Mon–Sun: 12PM – 12AM</p>
+      </div>
+    </div>
   </footer>
+  <div class="footer-bottom">© 2026 MASSAAD طبلية. All rights reserved.</div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCoNPG1yreCMOOs33nJy08OO9vbIn7PMk4",
-    authDomain: "massaad-website.firebaseapp.com",
-    projectId: "massaad-website",
-    storageBucket: "massaad-website.firebasestorage.app",
-    messagingSenderId: "368742651360",
-    appId: "1:368742651360:web:2ef70acf15628903938785"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoNPG1yreCMOOs33nJy08OO9vbIn7PMk4",
+      authDomain: "massaad-website.firebaseapp.com",
+      projectId: "massaad-website",
+      storageBucket: "massaad-website.firebasestorage.app",
+      messagingSenderId: "368742651360",
+      appId: "1:368742651360:web:2ef70acf15628903938785"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  window.submitReservation = async function() {
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
-    const phone = document.getElementById('phone').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const guests = document.getElementById('guests').value;
-    const notes = document.getElementById('notes').value;
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX - 6 + 'px';
+      cursor.style.top = e.clientY - 6 + 'px';
+      setTimeout(() => {
+        follower.style.left = e.clientX - 18 + 'px';
+        follower.style.top = e.clientY - 18 + 'px';
+      }, 80);
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; follower.style.transform = 'scale(1.5)'; });
+      el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; follower.style.transform = 'scale(1)'; });
+    });
 
-    if (!firstName || !phone || !date || !time || !guests) {
-      alert('Please fill in all required fields!');
-      return;
+    window.submitReservation = async function() {
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const phone = document.getElementById('phone').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      const guests = document.getElementById('guests').value;
+      const notes = document.getElementById('notes').value;
+
+      if (!firstName || !phone || !date || !time || !guests) {
+        alert('Please fill in all required fields!');
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "reservations"), {
+          firstName, lastName, phone, date, time, guests, notes,
+          createdAt: serverTimestamp()
+        });
+        document.getElementById('successMsg').style.display = 'block';
+        document.querySelector('.submit-btn').style.display = 'none';
+      } catch (error) {
+        alert('Something went wrong. Please try again.');
+        console.error(error);
+      }
     }
-
-    try {
-      await addDoc(collection(db, "reservations"), {
-        firstName,
-        lastName,
-        phone,
-        date,
-        time,
-        guests,
-        notes,
-        createdAt: serverTimestamp()
-      });
-
-      document.getElementById('successMsg').style.display = 'block';
-      document.querySelector('.submit-btn').style.display = 'none';
-
-    } catch (error) {
-      alert('Something went wrong. Please try again.');
-      console.error(error);
-    }
-  }
-</script>
+  </script>
 
 </body>
 </html>
